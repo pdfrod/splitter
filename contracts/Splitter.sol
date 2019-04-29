@@ -2,9 +2,12 @@ pragma solidity 0.5.0;
 
 contract Splitter {
   enum Person { Alice, Bob, Carol }
+
   uint constant private PEOPLE_COUNT = 3;
   Person constant private owner = Person.Alice;
   address[PEOPLE_COUNT] private addresses;
+
+  event LogSendMoney(address indexed sender, uint value);
 
   constructor(address[PEOPLE_COUNT] memory _addresses) public {
     addresses = _addresses;
