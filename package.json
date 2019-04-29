@@ -1,0 +1,17 @@
+{
+  "name": "splitter",
+  "version": "1.0.0",
+  "description": "Implementation of B9lab Ethereum Developer Course Project 1",
+  "dependencies": {},
+  "devDependencies": {
+    "truffle-assertions": "^0.8.2"
+  },
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pdfrod/splitter.git"
+  },
+  "author": "Pedro Rodrigues"
+}

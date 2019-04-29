@@ -1,8 +1,8 @@
 const Splitter = artifacts.require('Splitter');
 const BN = web3.utils.BN;
+const truffleAssert = require('truffle-assertions');
 const {
   assertBigNumEq,
-  assertException,
   getBalance,
   getBalances
 } = require('./util');
@@ -44,23 +44,35 @@ contract('Splitter', function(accounts) {
 
     it('fires a LogSendMoney event', async function() {
       const splitter = await Splitter.deployed();
-      const params = { from: accounts[ALICE], value: 50 };
-      await splitter.sendMoney.sendTransaction(params);
-      assert.isTrue(false, 'Not implemented yet');
+      const from = accounts[ALICE];
+      const value = 50;
+      const params = { from, value };
+      const result = await splitter.sendMoney.sendTransaction(params);
+      truffleAssert.eventEmitted(result, 'LogSendMoney', (ev) => {
+        return ev.sender === from && ev.value.toNumber() === value;
+      });
     });
 
     it('rejects operations not done by Alice', async function() {
       const REASON = 'Unauthorized';
       const splitter = await Splitter.deployed();
       const params = { from: accounts[BOB] };
-      await assertException(splitter.sendMoney.sendTransaction(params), REASON);
+      await truffleAssert.fails(
+        splitter.sendMoney.sendTransaction(params),
+        truffleAssert.ErrorType.REVERT,
+        REASON
+      );
     });
 
     it('rejects values that are not even', async function() {
       const REASON = 'Only even values accepted';
       const splitter = await Splitter.deployed();
       const params = { from: accounts[ALICE], value: 3 };
-      await assertException(splitter.sendMoney.sendTransaction(params), REASON);
+      await truffleAssert.fails(
+        splitter.sendMoney.sendTransaction(params),
+        truffleAssert.ErrorType.REVERT,
+        REASON
+      );
     });
   });
 });
