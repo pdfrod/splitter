@@ -1,5 +1,7 @@
-const Migrations = artifacts.require("Migrations");
+const Migrations = artifacts.require('Migrations');
+const Splitter = artifacts.require('Splitter');
 
-module.exports = function(deployer) {
+module.exports = function(deployer, network, accounts) {
   deployer.deploy(Migrations);
+  deployer.deploy(Splitter, accounts);
 };
