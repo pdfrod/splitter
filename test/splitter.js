@@ -18,7 +18,8 @@ contract('Splitter', function(accounts) {
   describe('fallback function', function() {
     authTest(null, { from: accounts[CAROL], value: 10 });
 
-    eventTest('LogSendMoney', null, { from: accounts[ALICE], value: 50 });
+    eventTest('LogReceiveEther', null, { from: accounts[ALICE], value: 50 },
+      accounts);
 
     it('rejects values that are not even', async function() {
       const REASON = 'Only even values accepted';
@@ -36,14 +37,19 @@ contract('Splitter', function(accounts) {
   describe('split', function() {
     authTest('split', { from: accounts[BOB] });
 
-    eventTest('LogSplit', 'split', { from: accounts[ALICE] });
+    eventTest('LogSplit', 'split', { from: accounts[ALICE], value: 0 }, accounts);
   });
 
 
   describe('settle', function() {
     authTest('settle', { from: accounts[BOB] });
 
-    eventTest('LogSettle', 'settle', { from: accounts[ALICE] });
+    eventTest('LogSettle', 'settle', { from: accounts[ALICE], value: 0 }, accounts);
+  });
+
+
+  describe('kill', function() {
+    authTest('kill', { from: accounts[BOB] });
   });
 
 
@@ -53,7 +59,8 @@ contract('Splitter', function(accounts) {
 
     beforeEach(async function() {
       this.splitter = await Splitter.new(accounts);
-      await this.splitter.sendTransaction({ from: accounts[ALICE], initialValue });
+      const params = { from: accounts[ALICE], value: initialValue };
+      await this.splitter.sendTransaction(params);
     });
 
     it("deposits the received ether into Alice's account", async function() {
@@ -78,7 +85,7 @@ contract('Splitter', function(accounts) {
 
     it('settles the accounts to the blockchain', async function() {
       await this.splitter.split.sendTransaction();
-      const params = { from: accounts[ALICE], initialValue };
+      const params = { from: accounts[ALICE], value: initialValue };
       await this.splitter.sendTransaction(params);
       const initialBalances = await getBalances(accounts);
       await this.splitter.settle.sendTransaction({ gasPrice: '0' });

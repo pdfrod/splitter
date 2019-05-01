@@ -22,13 +22,13 @@ function authTest(fn, params) {
 }
 
 
-function eventTest(name, fn, params) {
+function eventTest(name, fn, params, accounts) {
   it(`fires a ${name} event`, async function() {
-    const splitter = await Splitter.deployed();
+    const splitter = await Splitter.new(accounts);
     const target = fn ? splitter[fn] : splitter;
     const result = await target.sendTransaction(params);
     truffleAssert.eventEmitted(result, name, (ev) => {
-      return ev.sender === params.from && ev.value.toNumber() === params.value;
+      return ev.value.toString() === params.value.toString();
     });
   });
 }
