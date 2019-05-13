@@ -8,40 +8,9 @@ function assertBigNumEq(actual, expected) {
 }
 
 
-function authTest(fn, params) {
-  it('rejects operations not done by Alice', async function() {
-    const REASON = 'Unauthorized';
-    const splitter = await Splitter.deployed();
-    const target = fn ? splitter[fn] : splitter;
-    await truffleAssert.fails(
-      target.sendTransaction(params),
-      truffleAssert.ErrorType.REVERT,
-      REASON
-    );
-  });
-}
-
-
-function eventTest(name, fn, params, accounts) {
-  it(`fires a ${name} event`, async function() {
-    const splitter = await Splitter.new(accounts);
-    const target = fn ? splitter[fn] : splitter;
-    const result = await target.sendTransaction(params);
-    truffleAssert.eventEmitted(result, name, (ev) => {
-      return ev.value.toString() === params.value.toString();
-    });
-  });
-}
-
-
 async function getBalance(account) {
   return new BN(await web3.eth.getBalance(account));
 }
 
 
-function getBalances(accounts) {
-  return Promise.all(accounts.map(getBalance));
-}
-
-
-module.exports = { assertBigNumEq, authTest, eventTest, getBalance, getBalances };
+module.exports = { assertBigNumEq, getBalance };
