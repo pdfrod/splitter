@@ -1,30 +1,17 @@
 pragma solidity 0.5.0;
 
-contract Splitter {
-  bool private isRunning = true;
-  address private owner;
+import "./Stoppable.sol";
+
+contract Splitter is Stoppable {
   uint constant private PEOPLE_COUNT = 2;
   address payable[PEOPLE_COUNT] private addresses;
   mapping(address => uint) private balances;
 
   event LogReceiveEther(uint value);
   event LogWithdraw(address indexed requester);
-  event LogPauseContract(address indexed sender);
-  event LogResumeContract(address indexed sender);
-
-  modifier onlyOwner {
-    require(msg.sender == owner, "Unauthorized");
-    _;
-  }
-
-  modifier onlyIfRunning {
-    require(isRunning);
-    _;
-  }
 
   // Receives an array with the addresses of Bob and Carol
   constructor(address payable[PEOPLE_COUNT] memory _addresses) public {
-    owner = msg.sender;
     addresses = _addresses;
   }
 
@@ -52,17 +39,6 @@ contract Splitter {
     msg.sender.transfer(value);
     emit LogWithdraw(msg.sender);
     return value;
-  }
-
-  function pauseContract() public onlyOwner onlyIfRunning {
-    isRunning = false;
-    emit LogPauseContract(msg.sender);
-  }
-
-  function resumeContract() public onlyOwner {
-    require(!isRunning);
-    isRunning = true;
-    emit LogResumeContract(msg.sender);
   }
 
   function add(uint a, uint b) internal pure returns (uint) {
