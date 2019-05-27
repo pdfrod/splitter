@@ -1,8 +1,10 @@
 pragma solidity 0.5.0;
 
+import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import "./Stoppable.sol";
 
 contract Splitter is Stoppable {
+  using SafeMath for uint;
   uint constant private PEOPLE_COUNT = 2;
   address payable[PEOPLE_COUNT] private addresses;
   mapping(address => uint) private balances;
@@ -26,7 +28,7 @@ contract Splitter is Stoppable {
     uint splitValue = msg.value / 2;
     for (uint i = 0; i < addresses.length; i++) {
       address payable account = addresses[i];
-      balances[account] = add(balances[account], splitValue);
+      balances[account] = balances[account].add(splitValue);
     }
     emit LogDeposit(msg.sender, msg.value);
   }
@@ -39,12 +41,5 @@ contract Splitter is Stoppable {
     msg.sender.transfer(value);
     emit LogWithdraw(msg.sender);
     return value;
-  }
-
-  function add(uint a, uint b) internal pure returns (uint) {
-    uint result = a + b;
-    // Just in case somebody gets filthy rich
-    assert(result >= a && result >= b);
-    return result;
   }
 }

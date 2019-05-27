@@ -2,7 +2,9 @@
   "name": "splitter",
   "version": "1.0.0",
   "description": "Implementation of B9lab Ethereum Developer Course Project 1",
-  "dependencies": {},
+  "dependencies": {
+    "openzeppelin-solidity": "^2.3.0"
+  },
   "devDependencies": {
     "truffle-assertions": "^0.8.2"
   },
