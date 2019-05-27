@@ -7,7 +7,7 @@ contract Splitter is Stoppable {
   address payable[PEOPLE_COUNT] private addresses;
   mapping(address => uint) private balances;
 
-  event LogReceiveEther(uint value);
+  event LogDeposit(address indexed sender, uint value);
   event LogWithdraw(address indexed requester);
 
   // Receives an array with the addresses of Bob and Carol
@@ -16,19 +16,19 @@ contract Splitter is Stoppable {
   }
 
   // Returns person's current balance.
-  function getBalance(address payable account) public view returns (uint) {
+  function getBalance(address account) public view returns (uint) {
     return balances[account];
   }
 
   // Splits the received ether into Bob and Carol's account.
-  function() external payable onlyOwner onlyIfRunning {
+  function deposit() external payable onlyOwner onlyIfRunning {
     require(msg.value % 2 == 0, "Only even values accepted");
     uint splitValue = msg.value / 2;
     for (uint i = 0; i < addresses.length; i++) {
       address payable account = addresses[i];
       balances[account] = add(balances[account], splitValue);
     }
-    emit LogReceiveEther(msg.value);
+    emit LogDeposit(msg.sender, msg.value);
   }
 
   // Allows a person to withdraw their funds from the contract

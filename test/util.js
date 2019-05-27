@@ -4,7 +4,7 @@ const truffleAssert = require('truffle-assertions');
 
 
 function assertBigNumEq(actual, expected) {
-  assert.isTrue(actual.eq(expected), `expected ${actual} to equal ${expected}`);
+  assert.strictEqual(actual.toString(10), expected.toString(10));
 }
 
 

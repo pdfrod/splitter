@@ -11,15 +11,15 @@ const CAROL = 1;
 
 
 contract('Splitter', function(allAccounts) {
-  const [aliceAddress, ...accounts] = allAccounts;
-  const [bobAddress, carolAddress] = accounts;
+  const [aliceAddress, bobAddress, carolAddress] = allAccounts;
+  const accounts = [bobAddress, carolAddress];
   const initialValue = new BN(30);
   const halfInitialValue = initialValue.div(new BN(2));
 
   beforeEach(async function() {
     this.splitter = await Splitter.new(accounts, { from: aliceAddress });
     const params = { from: aliceAddress, value: initialValue };
-    this.result = await this.splitter.sendTransaction(params);
+    this.result = await this.splitter.deposit(params);
   });
 
   describe('sending funds to the contract', function() {
@@ -30,8 +30,8 @@ contract('Splitter', function(allAccounts) {
       assertBigNumEq(balances[CAROL], halfInitialValue);
     });
 
-    it('emits a LogReceiveEther event', async function() {
-      truffleAssert.eventEmitted(this.result, 'LogReceiveEther', (ev) => {
+    it('emits a LogDeposit event', async function() {
+      truffleAssert.eventEmitted(this.result, 'LogDeposit', (ev) => {
         return ev.value.toString() === initialValue.toString();
       });
     });
