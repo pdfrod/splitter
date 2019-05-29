@@ -17,9 +17,9 @@ contract('Splitter', function(allAccounts) {
   const halfInitialValue = initialValue.div(new BN(2));
 
   beforeEach(async function() {
-    this.splitter = await Splitter.new(accounts, { from: aliceAddress });
+    this.splitter = await Splitter.new({ from: aliceAddress });
     const params = { from: aliceAddress, value: initialValue };
-    this.result = await this.splitter.deposit(params);
+    this.result = await this.splitter.deposit(accounts, params);
   });
 
   describe('sending funds to the contract', function() {
