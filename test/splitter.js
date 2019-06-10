@@ -13,7 +13,7 @@ const CAROL = 1;
 contract('Splitter', function(allAccounts) {
   const [aliceAddress, bobAddress, carolAddress] = allAccounts;
   const accounts = [bobAddress, carolAddress];
-  const initialValue = new BN(30);
+  const initialValue = new BN(web3.utils.toWei('1', 'ether'));
   const halfInitialValue = initialValue.div(new BN(2));
 
   beforeEach(async function() {
@@ -40,14 +40,18 @@ contract('Splitter', function(allAccounts) {
   describe('after Carols withdraws from her account', function() {
     beforeEach(async function() {
       this.initialBalance = await getBalance(carolAddress);
-      const params = { from: carolAddress, gasPrice: '0' }
+      const params = { from: carolAddress }
       this.result = await this.splitter.withdraw(params);
     });
 
     it('correctly sends the funds to Carol', async function() {
       const finalBalance = await getBalance(carolAddress);
-      const delta = finalBalance.sub(this.initialBalance);
-      assertBigNumEq(delta, halfInitialValue);
+      const transaction = await web3.eth.getTransaction(this.result.tx);
+      const gasUsed = new BN(this.result.receipt.gasUsed);
+      const transactionCost = new BN(transaction.gasPrice).mul(gasUsed);
+      const expectedBalance =
+        this.initialBalance.add(halfInitialValue).sub(transactionCost);
+      assertBigNumEq(finalBalance, expectedBalance);
     });
 
     it('sets her balance to zero', async function() {
