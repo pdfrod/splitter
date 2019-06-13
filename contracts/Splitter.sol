@@ -8,7 +8,7 @@ contract Splitter is Stoppable {
 
   mapping(address => uint) private balances;
 
-  event LogDeposit(address indexed sender, uint value, address payable[] addresses);
+  event LogDeposit(address indexed sender, uint value, address[] addresses);
   event LogWithdraw(address indexed requester);
 
   // Returns person's current balance.
@@ -17,13 +17,13 @@ contract Splitter is Stoppable {
   }
 
   // Splits the received ether evenly between addresses passed as argument.
-  function deposit(address payable[] calldata addresses) external payable onlyIfRunning {
+  function deposit(address[] calldata addresses) external payable onlyIfRunning {
     uint count = addresses.length;
     require(msg.value % count == 0,
             "The deposited amount is not evenly divisible between the recipients");
     uint splitValue = msg.value / count;
     for (uint i = 0; i < count; i++) {
-      address payable account = addresses[i];
+      address account = addresses[i];
       balances[account] = balances[account].add(splitValue);
     }
     emit LogDeposit(msg.sender, msg.value, addresses);

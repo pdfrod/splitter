@@ -6,6 +6,7 @@
     "openzeppelin-solidity": "^2.3.0"
   },
   "devDependencies": {
+    "given2": "^2.1.5",
     "truffle-assertions": "^0.8.2"
   },
   "scripts": {
